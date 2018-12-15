@@ -2,7 +2,7 @@ var WIDTH = window.innerWidth,
     HEIGHT = window.innerHeight,
     VIEW_ANGLE = 75,
     BOX_SIZE = 1,
-    Z = 0.01,
+    Z = 1,
     GRID_WIDTH = 12,
     GRID_HEIGHT = 24,
     ASPECT = WIDTH / HEIGHT,
@@ -93,11 +93,19 @@ function drawShape(shape, offset) {
     });
 }
 
+function resetShape() {
+    const types = 'TIOJLSZ';
+    actor.shape = createShape(types[types.length * Math.random() | 0])
+    actor.pos.y = -1;
+    actor.pos.x = 6;
+}
+
 function dropShape() {
     actor.pos.y++;
     if(collision(board,actor)){
         actor.pos.y--;
         join(board,actor);
+        resetShape();
         actor.pos.y = -1;
     }
     counter = 0;
