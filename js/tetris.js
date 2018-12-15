@@ -38,6 +38,7 @@ const actor = {
 };
 
 const board = createBoard(GRID_WIDTH, GRID_HEIGHT);
+const colors = [null,0x0963f4,0xef170b,0xefec15,0x0eef4e,0xe522d5,0x0dbbe2];
 
 camera.position.x = 6;
 camera.position.y = -12;
@@ -83,7 +84,7 @@ function drawShape(shape, offset) {
                 var cube = new THREE.Mesh(
                     new THREE.BoxGeometry(BOX_SIZE, BOX_SIZE, Z
                     ),
-                    new THREE.MeshBasicMaterial({color: 'black', wireframe: false})
+                    new THREE.MeshBasicMaterial({color: colors[value], wireframe: false})
                 );
                 cube.position.x = x + offset.x;
                 cube.position.y = - y - offset.y;
@@ -98,6 +99,10 @@ function resetShape() {
     actor.shape = createShape(types[types.length * Math.random() | 0])
     actor.pos.y = -1;
     actor.pos.x = 6;
+    if(collision(board,actor)){
+        //board.forEach(row => row.fill(0));
+        gameOver = true;
+    }
 }
 
 function dropShape() {
@@ -127,6 +132,18 @@ function join(board, actor){
             }
         })
     })
+}
+
+function collectRows() {
+    outer: for(let y = board.length - 1; y < 0; --y){
+        for(let x = 0; x < board[y].length; ++x){
+            if(board[y][x] === 0){
+                continue outer;
+            }
+        }
+
+        const row = board.splice(y, 1)[0].fill(0);
+    }
 }
 
 function collision(board, actor) {
@@ -182,30 +199,30 @@ function createShape(type){
             [1, 1, 1],];
         case 'I': return [
             [0, 0, 0, 0],
-            [1, 1, 1, 1],
+            [2, 2, 2, 2],
             [0, 0, 0, 0],
             [0, 0, 0, 0],];
         case 'O': return [
             [0, 0, 0],
-            [0, 1, 1],
-            [0, 1, 1],];
+            [0, 3, 3],
+            [0, 3, 3],];
         case 'J': return [
             [0, 0, 0, 0],
             [0, 0, 0, 0],
-            [1, 0, 0, 0],
-            [1, 1, 1, 1],];
+            [4, 0, 0, 0],
+            [4, 4, 4, 4],];
         case 'L': return [
             [0, 0, 0, 0],
             [0, 0, 0, 0],
-            [0, 0, 0, 1],
-            [1, 1, 1, 1],];
+            [0, 0, 0, 5],
+            [5, 5, 5, 5],];
         case 'S': return [
             [0, 0, 0],
-            [0, 1, 1],
-            [1, 1, 0],];
+            [0, 6, 6],
+            [6, 6, 0],];
         case 'Z': return [
             [0, 0, 0],
-            [1, 1, 0],
-            [0, 1, 1],];
+            [7, 7, 0],
+            [0, 7, 7],];
     }
 }
