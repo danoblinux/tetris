@@ -32,14 +32,8 @@ document.addEventListener('keydown', event => {
     }
 });
 
-var shape = [
-    [0, 0, 0],
-    [1, 1, 1],
-    [0, 1, 0],
-];
-
 const actor = {
-    shape: shape,
+    shape: createShape('I'),
     pos: {x: 0, y: -1},
 };
 
@@ -75,7 +69,7 @@ function drawBoard() {
     var gameboard = new THREE.Mesh(
         new THREE.BoxGeometry(GRID_WIDTH, GRID_HEIGHT, Z
         ),
-        new THREE.MeshBasicMaterial({color: 'black', wireframe: false})
+        new THREE.MeshBasicMaterial({color: 'white', wireframe: false})
     );
     gameboard.position.x = 6 - OFFSET;
     gameboard.position.y = -12 + OFFSET;
@@ -89,7 +83,7 @@ function drawShape(shape, offset) {
                 var cube = new THREE.Mesh(
                     new THREE.BoxGeometry(BOX_SIZE, BOX_SIZE, Z
                     ),
-                    new THREE.MeshBasicMaterial({color: 'red', wireframe: false})
+                    new THREE.MeshBasicMaterial({color: 'black', wireframe: false})
                 );
                 cube.position.x = x + offset.x;
                 cube.position.y = - y - offset.y;
@@ -110,11 +104,11 @@ function dropShape() {
 }
 
 function createBoard(width, height) {
-    const matrix = [];
+    const board = [];
     while (height--){
-        matrix.push(new Array(width).fill(0));
+        board.push(new Array(width).fill(0));
     }
-    return matrix;
+    return board;
 }
 
 function join(board, actor){
@@ -165,5 +159,23 @@ function rotate(shape, direction) {
 }
 
 function rotateActor(direction) {
+    let offset = 1;
     rotate(actor.shape, direction);
+    while(collision(board, shape)){
+        actor.pos.x += offset;
+    }
+}
+
+function createShape(type){
+    switch (type) {
+        case 'T': return [
+            [0, 0, 0],
+            [1, 1, 1],
+            [0, 1, 0],];
+        case 'I': return [
+            [0, 0, 0, 0],
+            [1, 1, 1, 1],
+            [0, 0, 0, 0],
+            [0, 0, 0, 0],];
+    }
 }
