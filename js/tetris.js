@@ -33,7 +33,7 @@ document.addEventListener('keydown', event => {
 });
 
 const actor = {
-    shape: createShape('I'),
+    shape: createShape('S'),
     pos: {x: 0, y: -1},
 };
 
@@ -170,12 +170,34 @@ function createShape(type){
     switch (type) {
         case 'T': return [
             [0, 0, 0],
-            [1, 1, 1],
-            [0, 1, 0],];
+            [0, 1, 0],
+            [1, 1, 1],];
         case 'I': return [
             [0, 0, 0, 0],
             [1, 1, 1, 1],
             [0, 0, 0, 0],
             [0, 0, 0, 0],];
+        case 'O': return [
+            [0, 0, 0],
+            [0, 1, 1],
+            [0, 1, 1],];
+        case 'J': return [
+            [0, 0, 0, 0],
+            [0, 0, 0, 0],
+            [1, 0, 0, 0],
+            [1, 1, 1, 1],];
+        case 'L': return [
+            [0, 0, 0, 0],
+            [0, 0, 0, 0],
+            [0, 0, 0, 1],
+            [1, 1, 1, 1],];
+        case 'S': return [
+            [0, 0, 0],
+            [0, 1, 1],
+            [1, 1, 0],];
+        case 'Z': return [
+            [0, 0, 0],
+            [1, 1, 0],
+            [0, 1, 1],];
     }
 }
