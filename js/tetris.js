@@ -2,7 +2,7 @@ var WIDTH = window.innerWidth,
     HEIGHT = window.innerHeight,
     VIEW_ANGLE = 75,
     BOX_SIZE = 1,
-    Z = 1,
+    Z = 0.01,
     GRID_WIDTH = 12,
     GRID_HEIGHT = 24,
     ASPECT = WIDTH / HEIGHT,
@@ -33,12 +33,12 @@ document.addEventListener('keydown', event => {
 });
 
 const actor = {
-    shape: createShape('S'),
-    pos: {x: 0, y: -1},
+    shape: createShape('L'),
+    pos: {x: 6, y: -1},
 };
 
 const board = createBoard(GRID_WIDTH, GRID_HEIGHT);
-const colors = [null,0x0963f4,0xef170b,0xefec15,0x0eef4e,0xe522d5,0x0dbbe2];
+const colors = [0xb20de0,0x0963f4,0xef170b,0xefec15,0x0eef4e,0xe522d5,0x0dbbe2];
 
 camera.position.x = 6;
 camera.position.y = -12;
@@ -50,7 +50,6 @@ function animate(time = 0) {
     counter += _time;
     while(scene.children.length > 0){
         scene.remove(scene.children[0]);
-        renderer.renderLists.dispose();
     }
 
     if(counter > interval){
@@ -61,16 +60,17 @@ function animate(time = 0) {
     drawShape(board, {x: 0, y: 0});
     drawShape(actor.shape, actor.pos);
     renderer.render( scene, camera );
+    renderer.renderLists.dispose();
     if(!gameOver) window.requestAnimationFrame( animate );
-};
+}
 
 animate();
 
 function drawBoard() {
     var gameboard = new THREE.Mesh(
-        new THREE.BoxGeometry(GRID_WIDTH, GRID_HEIGHT, Z
+        new THREE.PlaneGeometry(GRID_WIDTH, GRID_HEIGHT, Z
         ),
-        new THREE.MeshBasicMaterial({color: 'white', wireframe: false})
+        new THREE.MeshBasicMaterial({color: 0xdeeaed})
     );
     gameboard.position.x = 6 - OFFSET;
     gameboard.position.y = -12 + OFFSET;
@@ -82,9 +82,9 @@ function drawShape(shape, offset) {
         row.forEach((value, x) => {
             if (value !== 0) {
                 var cube = new THREE.Mesh(
-                    new THREE.BoxGeometry(BOX_SIZE, BOX_SIZE, Z
+                    new THREE.PlaneGeometry(BOX_SIZE, BOX_SIZE, Z
                     ),
-                    new THREE.MeshBasicMaterial({color: colors[value], wireframe: false})
+                    new THREE.MeshBasicMaterial({color: colors[value]})
                 );
                 cube.position.x = x + offset.x;
                 cube.position.y = - y - offset.y;
@@ -111,7 +111,7 @@ function dropShape() {
         actor.pos.y--;
         join(board,actor);
         resetShape();
-        actor.pos.y = -1;
+        collectRows();
     }
     counter = 0;
 }
@@ -135,7 +135,7 @@ function join(board, actor){
 }
 
 function collectRows() {
-    outer: for(let y = board.length - 1; y < 0; --y){
+    outer: for(let y = board.length - 1; y > 0; --y){
         for(let x = 0; x < board[y].length; ++x){
             if(board[y][x] === 0){
                 continue outer;
@@ -143,6 +143,8 @@ function collectRows() {
         }
 
         const row = board.splice(y, 1)[0].fill(0);
+        board.unshift(row);
+        ++y;
     }
 }
 
