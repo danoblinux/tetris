@@ -1,113 +1,169 @@
 var WIDTH = window.innerWidth,
     HEIGHT = window.innerHeight,
     VIEW_ANGLE = 75,
-    BOX_SIZE = 10,
+    BOX_SIZE = 1,
     Z = 0.01,
-    GRID_WIDTH = 10,
+    GRID_WIDTH = 12,
     GRID_HEIGHT = 24,
     ASPECT = WIDTH / HEIGHT,
-    NEAR = 0.1,
-    FAR = 1000,
     OFFSET = BOX_SIZE / 2,
-    SPEED = 0.8;
+    NEAR = 0.1,
+    FAR = 1000;
 
 var gameOver = false;
-
+var counter = 0, lastTime = 0, interval = 1000;
 var scene = new THREE.Scene();
 var camera = new THREE.PerspectiveCamera( VIEW_ANGLE, ASPECT, NEAR, FAR );
 
 var renderer = new THREE.WebGLRenderer({alpha: true});
 renderer.setSize( window.innerWidth, window.innerHeight );
 document.body.appendChild( renderer.domElement );
-document.addEventListener("keydown", onDocumentKeyDown, false);
-/*var fillBoard = function () {
-    for(var i = 0; i <= CUBE_SIZE * GRID_WIDTH; i+=CUBE_SIZE){
-        for(var j = 0; j <= CUBE_SIZE * GRID_HEIGHT; j+=CUBE_SIZE){
-            var cube = new THREE.Mesh( new THREE.CubeGeometry( CUBE_SIZE + i , CUBE_SIZE + j, Z ), new THREE.MeshBasicMaterial( { color: 0xffffff , wireframe: false} ));
-            scene.add( cube );
-        }
+document.addEventListener('keydown', event => {
+    if(event.keyCode === 37){
+        moveActor(-1);
+    }else if(event.keyCode === 39){
+        moveActor(1);
+    }else if(event.keyCode === 40){
+        dropShape();
+    }else if(event.keyCode === 81){
+        rotateActor(1);
+    }else if(event.keyCode === 69){
+        rotateActor(-1);
     }
-};*/
+});
 
-//render grid board
-var board = new THREE.Mesh(
-    new THREE.CubeGeometry(
-        GRID_WIDTH * BOX_SIZE, GRID_HEIGHT * BOX_SIZE, Z,
-        GRID_WIDTH, GRID_HEIGHT, Z),
-    new THREE.MeshBasicMaterial( { color: 0xffffff, wireframe: false } )
-);
-scene.add(board);
+var shape = [
+    [0, 0, 0],
+    [1, 1, 1],
+    [0, 1, 0],
+];
 
-//test cube
-var cube = new THREE.Mesh(
-    new THREE.BoxGeometry(BOX_SIZE, BOX_SIZE, Z
-        ),
-    new THREE.MeshBasicMaterial( { color: 0x000000, wireframe: false } )
-);
-cube.position.y = 120 - BOX_SIZE / 2;
-cube.position.x = 0 - OFFSET;
-scene.add(cube);
-var cube2 = new THREE.Mesh(
-    new THREE.BoxGeometry(BOX_SIZE, BOX_SIZE, Z
-    ),
-    new THREE.MeshBasicMaterial( { color: 0x000000, wireframe: false } )
-);
-cube2.position.y = 120 - BOX_SIZE / 2;
-cube2.position.x = 10 - OFFSET;
-var cube3 = new THREE.Mesh(
-    new THREE.BoxGeometry(BOX_SIZE, BOX_SIZE, Z
-    ),
-    new THREE.MeshBasicMaterial( { color: 0x000000, wireframe: false } )
-);
-cube3.position.y = 120 - BOX_SIZE / 2;
-cube3.position.x = 20 - OFFSET;
-scene.add(cube2);
-scene.add(cube3);
-camera.position.z = 180;
+const actor = {
+    shape: shape,
+    pos: {x: 0, y: -1},
+};
 
-var animate = function () {
+const board = createBoard(GRID_WIDTH, GRID_HEIGHT);
 
-    cube.position.y -= SPEED;
-    cube2.position.y -= SPEED;
-    cube3.position.y -= SPEED;
-    if(cube.position.y < -120 + OFFSET){
-        cube.position.y = -120 + BOX_SIZE / 2;
+camera.position.x = 6;
+camera.position.y = -12;
+camera.position.z = 20;
+
+function animate(time = 0) {
+    const _time = time - lastTime;
+    lastTime = time;
+    counter += _time;
+    while(scene.children.length > 0){
+        scene.remove(scene.children[0]);
+        renderer.renderLists.dispose();
     }
-    if(cube2.position.y < -120 + OFFSET){
-        cube2.position.y = -120 + BOX_SIZE / 2;
+
+    if(counter > interval){
+        dropShape();
     }
-    if(cube3.position.y < -120 + OFFSET){
-        cube3.position.y = -120 + BOX_SIZE / 2;
-    }
+
+    drawBoard();
+    drawShape(board, {x: 0, y: 0});
+    drawShape(actor.shape, actor.pos);
     renderer.render( scene, camera );
     if(!gameOver) window.requestAnimationFrame( animate );
 };
 
 animate();
 
-function onDocumentKeyDown(event) {
-    var keyCode = event.which;
-    if (keyCode == 37 && cube.position.x >= -50 + BOX_SIZE){
-        cube.position.x -= BOX_SIZE;
-        cube2.position.x -= BOX_SIZE;
-        cube3.position.x -= BOX_SIZE;
-    }else if (keyCode == 39 && cube3.position.x <= 50 - BOX_SIZE){
-        cube.position.x += BOX_SIZE;
-        cube2.position.x += BOX_SIZE;
-        cube3.position.x += BOX_SIZE;
-    }else if (keyCode == 40 && cube3.position.x <= 50 - BOX_SIZE){
-        SPEED = 3;
+function drawBoard() {
+    var gameboard = new THREE.Mesh(
+        new THREE.BoxGeometry(GRID_WIDTH, GRID_HEIGHT, Z
+        ),
+        new THREE.MeshBasicMaterial({color: 'black', wireframe: false})
+    );
+    gameboard.position.x = 6 - OFFSET;
+    gameboard.position.y = -12 + OFFSET;
+    scene.add(gameboard);
+}
+
+function drawShape(shape, offset) {
+    shape.forEach((row, y) => {
+        row.forEach((value, x) => {
+            if (value !== 0) {
+                var cube = new THREE.Mesh(
+                    new THREE.BoxGeometry(BOX_SIZE, BOX_SIZE, Z
+                    ),
+                    new THREE.MeshBasicMaterial({color: 'red', wireframe: false})
+                );
+                cube.position.x = x + offset.x;
+                cube.position.y = - y - offset.y;
+                scene.add(cube);
+            }
+        })
+    });
+}
+
+function dropShape() {
+    actor.pos.y++;
+    if(collision(board,actor)){
+        actor.pos.y--;
+        join(board,actor);
+        actor.pos.y = -1;
+    }
+    counter = 0;
+}
+
+function createBoard(width, height) {
+    const matrix = [];
+    while (height--){
+        matrix.push(new Array(width).fill(0));
+    }
+    return matrix;
+}
+
+function join(board, actor){
+    actor.shape.forEach((row, y) => {
+        row.forEach((value, x) => {
+            if(value !== 0){
+                board[y +   actor.pos.y][x + actor.pos.x] = value;
+            }
+        })
+    })
+}
+
+function collision(board, actor) {
+    const [b, o] = [actor.shape, actor.pos];
+    for(let y = 0; y < b.length; y++){
+        for(let x = 0; x < b[y].length; ++x){
+            if(b[y][x] !== 0 && (board[y + o.y] && board[y + o.y][x + o.x]) !== 0){
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+function moveActor(direction) {
+    actor.pos.x += direction;
+    if(collision(board,actor)){
+        actor.pos.x -= direction;
     }
 }
 
-if ( !window.requestAnimationFrame ) {
-    window.requestAnimationFrame = ( function() {
-        return window.webkitRequestAnimationFrame ||
-            window.mozRequestAnimationFrame ||
-            window.oRequestAnimationFrame ||
-            window.msRequestAnimationFrame ||
-            function( /* function FrameRequestCallback */ callback, /* DOMElement Element */ element ) {
-                window.setTimeout( callback, 1000 / 60 );
-            };
-    })();
+function rotate(shape, direction) {
+    for(let y = 0; y < shape.length; ++y){
+        for(let x = 0; x < y; ++x){
+            [   shape[x][y],
+                shape[y][x],
+            ] = [
+                shape[y][x],
+                shape[x][y]
+            ];
+        }
+    }
+    if(direction > 0) {
+        shape.forEach(row => row.reverse())
+    } else {
+        shape.reverse();
+    }
+}
+
+function rotateActor(direction) {
+    rotate(actor.shape, direction);
 }
