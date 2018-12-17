@@ -6,6 +6,11 @@
 </head>
 
 <body>
+
+    <h1>Tetris</h1>
+    <h3>Speed</h3>
+    <div class="slidercontainer"><input aria-valuetext="Speed" class="slider" id="speedSlider" type="range" min="1" max="10" step="1" value="1" data-orientation="vertical" oninput="setSpeedSlider(this.value)"></div>
+    <button class="button" onclick="setHardModeOn()"> Hard Mode </button>
     <script src="js/three.js"></script>
     <script src="js/tetris.js"></script>
 </body>

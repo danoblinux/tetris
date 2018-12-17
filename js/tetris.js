@@ -8,11 +8,11 @@ var WIDTH = window.innerWidth,
     ASPECT = WIDTH / HEIGHT,
     OFFSET = BOX_SIZE / 2,
     NEAR = 0.1,
-    SPEED = 10,
     FAR = 1000;
 
-var counterr = 0;
 var gameOver = false;
+var hardMode = false;
+var speed = 1;
 var counter = 0, lastTime = 0, interval = 1000;
 var scene = new THREE.Scene();
 var camera = new THREE.PerspectiveCamera( VIEW_ANGLE, ASPECT, NEAR, FAR );
@@ -33,14 +33,14 @@ document.addEventListener('keydown', event => {
         rotateActor(-1);
     }
 });
-
+const types = 'TIOJLSZ';
 const actor = {
-    shape: createShape('L'),
+    shape: createShape(types[types.length * Math.random() | 0]),
     pos: {x: 6, y: -1},
 };
 
 const board = createBoard(GRID_WIDTH, GRID_HEIGHT);
-const colors = [0xb20de0,0x0963f4,0xef170b,0xefec15,0x0eef4e,0xe522d5,0x0dbbe2];
+const colors = [0xb20de0,0x0963f4,0xef170b,0xefec15,0x0eef4e,0xe522d5,0x0dbbe2,0xb9f442,0xeabc02,0x9a15ed];
 
 camera.position.x = 6;
 camera.position.y = -12;
@@ -53,9 +53,13 @@ function animate(time = 0) {
     while(scene.children.length > 0){
         scene.remove(scene.children[0]);
     }
-    counterr++;
-    if(counter > interval / SPEED){
+    if(counter > interval / speed && hardMode === false) {
         dropShape();
+    }
+
+    if(counter > interval / speed && hardMode === true){
+        dropShape();
+
     }
 
     drawBoard();
@@ -63,24 +67,37 @@ function animate(time = 0) {
     drawShape(actor.shape, actor.pos);
     renderer.render( scene, camera );
     renderer.renderLists.dispose();
-    console.log(counterr);
     if(!gameOver) window.requestAnimationFrame( animate );
 }
 
 animate();
 
 function drawBoard() {
+    renderer.clearColor();
+    renderer.clearDepth(1.0);
     var gameboard = new THREE.Mesh(
         new THREE.PlaneGeometry(GRID_WIDTH, GRID_HEIGHT, Z
         ),
-        new THREE.MeshBasicMaterial({color: 0xdeeaed})
+        new THREE.MeshBasicMaterial({color: 0x79818e})
     );
     gameboard.position.x = 6 - OFFSET;
     gameboard.position.y = -12 + OFFSET;
     scene.add(gameboard);
+    renderer.dispose();
+}
+
+function setSpeedSlider(value) {
+    document.getElementById('speedSlider').innerHTML = value;
+    speed = document.getElementById('speedSlider').innerHTML;
+}
+
+function setHardModeOn(){
+    hardMode = true;
 }
 
 function drawShape(shape, offset) {
+    renderer.clearColor();
+    renderer.clearDepth(1.0);
     shape.forEach((row, y) => {
         row.forEach((value, x) => {
             if (value !== 0) {
@@ -95,11 +112,17 @@ function drawShape(shape, offset) {
             }
         })
     });
+    renderer.dispose();
 }
 
 function resetShape() {
     const types = 'TIOJLSZ';
-    actor.shape = createShape(types[types.length * Math.random() | 0])
+    const supertypes = 'TIOJLSZFQP';
+    if(hardMode === false) {
+        actor.shape = createShape(types[types.length * Math.random() | 0]);
+    }else if(hardMode === true){
+        actor.shape = createShape(supertypes[supertypes.length * Math.random() | 0]);
+    }
     actor.pos.y = -1;
     actor.pos.x = 6;
     if(collision(board,actor)){
@@ -229,5 +252,21 @@ function createShape(type){
             [0, 0, 0],
             [7, 7, 0],
             [0, 7, 7],];
+        case 'F': return [
+            [0, 0, 0, 0, 0],
+            [8, 8, 8, 0, 0],
+            [8, 0, 0, 0, 0],
+            [8, 8, 0, 0, 0],
+            [8, 0, 0, 0, 0],];
+        case 'P': return [
+            [0, 0, 0, 0],
+            [0, 1, 0, 0],
+            [1, 1, 1, 0],
+            [0, 1, 0, 0],];
+        case 'Q': return [
+            [0, 0, 0, 0],
+            [9, 9, 9, 0],
+            [9, 0, 9, 0],
+            [9, 9, 9, 9],];
     }
 }

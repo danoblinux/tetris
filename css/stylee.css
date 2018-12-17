@@ -1,43 +1,16 @@
-body {
-    padding: 0;
-    overflow: hidden;
-    background: url("../res/b1.jpg") no-repeat;
-}
-
-.slidercontainer {
+.slidecontainer {
     width: 100%;
 }
 
-h1 {
-    position: absolute;
-    color: white;
-    margin-top: 10px;
-    margin-left: 46%;
-    font-family: "Courier New";
-}
-
-h3 {
-    position: absolute;
-    color: white;
-    margin-top: 140px;
-    margin-left: 400px;
-    font-family: "Courier New";
-    display: inline-block;
-}
-
 .slider {
-    position: absolute;
     -webkit-appearance: none;
-    width: 200px;
+    width: 800px;
     height: 30px;
-    margin-top: 170px;
-    margin-left: 400px;
     background: #d3d3d3;
     outline: none;
     opacity: 0.7;
     -webkit-transition: .2s;
     transition: opacity .2s;
-    font-family: "Courier New";
 }
 
 .slider:hover {
@@ -64,17 +37,25 @@ h3 {
     background-color: #4CAF50; /* Green */
     border: none;
     color: white;
-    padding: 10px 16px;
+    padding: 15px 32px;
     position: absolute;
-    margin-top: 210px;
+    margin-top: 200px;
     margin-left: 400px;
+    text-align: center;
+    text-decoration: none;
     display: inline-block;
     font-size: 16px;
     cursor: pointer;
-    font-family: "Courier New";
 }
 
+.button2 {background-color: #008CBA;} /* Blue */
+.button3 {background-color: #f44336;} /* Red */
+.button4 {background-color: #e7e7e7; color: black;} /* Gray */
+.button5 {background-color: #555555;} /* Black */
 
-
-
-
+#text {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    z-index: 10;
+}
