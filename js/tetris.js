@@ -8,8 +8,10 @@ var WIDTH = window.innerWidth,
     ASPECT = WIDTH / HEIGHT,
     OFFSET = BOX_SIZE / 2,
     NEAR = 0.1,
+    SPEED = 10,
     FAR = 1000;
 
+var counterr = 0;
 var gameOver = false;
 var counter = 0, lastTime = 0, interval = 1000;
 var scene = new THREE.Scene();
@@ -51,8 +53,8 @@ function animate(time = 0) {
     while(scene.children.length > 0){
         scene.remove(scene.children[0]);
     }
-
-    if(counter > interval){
+    counterr++;
+    if(counter > interval / SPEED){
         dropShape();
     }
 
@@ -61,6 +63,7 @@ function animate(time = 0) {
     drawShape(actor.shape, actor.pos);
     renderer.render( scene, camera );
     renderer.renderLists.dispose();
+    console.log(counterr);
     if(!gameOver) window.requestAnimationFrame( animate );
 }
 
