@@ -1,11 +1,21 @@
 body {
     padding: 0;
     overflow: hidden;
+    color: white;
     background: url("../res/b1.jpg") no-repeat;
+    font-size: 20px;
+    font-weight: bold;
+    font-family: "Courier New";
 }
 
 .slidercontainer {
     width: 100%;
+}
+
+#score {
+    position: absolute;
+    margin-top: 140px;
+    margin-left: 65%;
 }
 
 h1 {
@@ -13,40 +23,26 @@ h1 {
     color: white;
     margin-top: 10px;
     margin-left: 46%;
-    font-family: "Courier New";
 }
 
-h3 {
+h4 {
     position: absolute;
     color: white;
     margin-top: 140px;
-    margin-left: 400px;
-    font-family: "Courier New";
+    margin-left: 25%;
     display: inline-block;
 }
 
 .slider {
     position: absolute;
-    -webkit-appearance: none;
     width: 200px;
     height: 30px;
     margin-top: 170px;
-    margin-left: 400px;
-    background: #d3d3d3;
-    outline: none;
-    opacity: 0.7;
-    -webkit-transition: .2s;
-    transition: opacity .2s;
-    font-family: "Courier New";
+    margin-left: 25%;
 }
 
-.slider:hover {
-    opacity: 1;
-}
 
 .slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
     width: 25px;
     height: 25px;
     background: #4CAF50;
@@ -61,20 +57,12 @@ h3 {
 }
 
 .button {
-    background-color: #4CAF50; /* Green */
+    background-color: #4CAF50;
     border: none;
-    color: white;
     padding: 10px 16px;
     position: absolute;
     margin-top: 210px;
-    margin-left: 400px;
+    margin-left: 25%;
     display: inline-block;
-    font-size: 16px;
     cursor: pointer;
-    font-family: "Courier New";
 }
-
-
-
-
-

@@ -37,6 +37,7 @@ const types = 'TIOJLSZ';
 const actor = {
     shape: createShape(types[types.length * Math.random() | 0]),
     pos: {x: 6, y: -1},
+    score: 0,
 };
 
 const board = createBoard(GRID_WIDTH, GRID_HEIGHT);
@@ -92,7 +93,20 @@ function setSpeedSlider(value) {
 }
 
 function setHardModeOn(){
-    hardMode = true;
+    if(hardMode === false) {
+        hardMode = true;
+        speed = 3;
+        document.getElementById('speedSlider').innerHTML = speed;
+        document.getElementById('button1').innerHTML = 'HARD MODE is ON';
+        document.body.style.background = "url('res/b2.jpg')";
+    }else{
+        speed = 1;
+        hardMode = false;
+        document.getElementById('speedSlider').innerHTML = speed;
+        document.getElementById('button1').innerHTML = 'HARD MODE is OFF';
+        document.body.style.background = "url('res/b1.jpg')";
+    }
+
 }
 
 function drawShape(shape, offset) {
@@ -138,6 +152,7 @@ function dropShape() {
         join(board,actor);
         resetShape();
         collectRows();
+        updateScore();
     }
     counter = 0;
 }
@@ -161,6 +176,7 @@ function join(board, actor){
 }
 
 function collectRows() {
+    let rowCount = 1;
     outer: for(let y = board.length - 1; y > 0; --y){
         for(let x = 0; x < board[y].length; ++x){
             if(board[y][x] === 0){
@@ -171,6 +187,8 @@ function collectRows() {
         const row = board.splice(y, 1)[0].fill(0);
         board.unshift(row);
         ++y;
+
+        actor.score += rowCount * 10;
     }
 }
 
@@ -259,10 +277,9 @@ function createShape(type){
             [8, 8, 0, 0, 0],
             [8, 0, 0, 0, 0],];
         case 'P': return [
-            [0, 0, 0, 0],
-            [0, 1, 0, 0],
-            [1, 1, 1, 0],
-            [0, 1, 0, 0],];
+            [0, 1, 0],
+            [1, 1, 1],
+            [0, 1, 0],];
         case 'Q': return [
             [0, 0, 0, 0],
             [9, 9, 9, 0],
@@ -270,3 +287,9 @@ function createShape(type){
             [9, 9, 9, 9],];
     }
 }
+
+function updateScore() {
+    document.getElementById('score').innerText = "Score: " + actor.score;
+}
+
+updateScore();
